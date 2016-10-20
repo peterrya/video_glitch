@@ -18,13 +18,21 @@ std::vector<byte> mat_to_bytes (Mat frame)
     	int size = frame.total() * frame.elemSize();
     	std::vector<byte> fr_bytes(size);
     	fr_bytes.assign(frame.datastart, frame.dataend);
-    	return fr_bytes;
-}
+    	return fr_bytes;}
 
 Mat bytes_to_mat (std::vector<byte> bytes,int width,int height)
 {
     	Mat frame(height,width,CV_8UC3,bytes.data());  
-    	return frame;
+    	return frame;}
+
+int glitch_png(){
+	char buf[] = {'3'};
+	FILE *png = fopen("output.png","r+");
+	std::cout << "fuck\n";
+	fseek(png, 50, SEEK_SET);
+	std::cout << "shit\n";
+	fwrite(buf, sizeof(char), 1, png);
+	return 1;
 }
 
 int main(int argc, char** argv){
@@ -55,7 +63,13 @@ int main(int argc, char** argv){
 			break;
 		}
 		
-		
+		std::vector<int> comparams;
+		comparams.push_back(CV_IMWRITE_PNG_COMPRESSION);
+		comparams.push_back(9);
+		imwrite("output.png", frame, comparams);
+
+		glitch_png();		
+
 		imshow("Preview",frame);
 		out << hold;
 		if (waitKey(1) >=0){
