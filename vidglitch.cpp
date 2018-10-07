@@ -51,7 +51,10 @@ Mat glitch_test(Mat frame,int width,int height){
 	*/
 	std::vector<byte> framevec;  
 	framevec = mat_to_bytes(frame);
-	return bytes_to_mat(mat_to_bytes(frame),width,height);
+	for (int x = 0; x < framevec.size(); ++x){
+		framevec[x] = framevec[x]+90;
+	}
+	return bytes_to_mat(framevec, width, height);
 }
 
 int main(int argc, char** argv){
@@ -90,7 +93,7 @@ int main(int argc, char** argv){
 		imwrite("output.bmp", hold);
 		hold = glitch_test(frame,width,height);
 
-		imshow("Preview", frame);
+		imshow("Preview", hold);
 		
 		out << frame;
 		if (waitKey(1) >=0){
