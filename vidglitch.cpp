@@ -25,7 +25,7 @@ std::vector<byte> mat_to_bytes (Mat frame)
 
 Mat bytes_to_mat (std::vector<byte> bytes,int width,int height)
 {
-    	Mat frame(height,width,CV_8UC3,bytes.data());  
+    	Mat frame = Mat(height,width,CV_8UC3,bytes.data()).clone();  
     	return frame;}
 
 //will return to, will work with simpler glitches first
@@ -38,7 +38,7 @@ int glitch_png(){
 }
 
 //basic glitch to get the overall process working
-Mat glitch_test(Mat frame){
+Mat glitch_test(Mat frame,int width,int height){
 	/*This is based on changing a file for development purposes, will be removed once I am confident with the proper method
 	char buf[] = {'3'};
 	char *fileval;
@@ -49,10 +49,9 @@ Mat glitch_test(Mat frame){
 		fwrite(buf, sizeof(char),sizeof(buf),bmp);
 	}
 	*/
-	std::vector<byte> framevec;
+	std::vector<byte> framevec;  
 	framevec = mat_to_bytes(frame);
-	frame = bytes_to_mat(framevec,frame.cols,frame.rows);
-	return frame;
+	return bytes_to_mat(mat_to_bytes(frame),width,height);
 }
 
 int main(int argc, char** argv){
@@ -88,12 +87,12 @@ int main(int argc, char** argv){
 		//std::vector<int> comparams;
 		//comparams.push_back(CV_IMWRITE_PNG_COMPRESSION);
 		//comparams.push_back(9);
-//		imwrite("output.bmp", frame);
-
-		hold = glitch_test(frame);
+		imwrite("output.bmp", hold);
+		hold = glitch_test(frame,width,height);
 
 		imshow("Preview", frame);
-		out << hold;
+		
+		out << frame;
 		if (waitKey(1) >=0){
 			break;
 		}
