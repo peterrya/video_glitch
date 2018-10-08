@@ -51,10 +51,40 @@ Mat glitch_test(Mat frame,int width,int height){
 	*/
 	std::vector<byte> framevec;  
 	framevec = mat_to_bytes(frame);
-	for (int x = 0; x < framevec.size(); ++x){
-		framevec[x] = framevec[x]+90;
+	for (int x = 0; x < framevec.size()-1; ++x){
+		framevec[x] = framevec[x+1]+framevec[x];
 	}
 	return bytes_to_mat(framevec, width, height);
+}
+
+Mat glitch_bmp_row(Mat frame,int width,int height){
+	std::vector<byte> framevec;  
+	framevec = mat_to_bytes(frame);
+	for (int x = 6; x < framevec.size()-1; ++x){
+		framevec[x] = framevec[x-3]/2+framevec[x]-framevec[x-6]/2;
+	}
+	return bytes_to_mat(framevec, width, height);
+}
+
+Mat glitch_bmp_col(Mat frame,int width,int height){
+	std::vector<byte> framevec;  
+	framevec = mat_to_bytes(frame);
+	for (int x = width*6; x < framevec.size()-1; ++x){
+		framevec[x] = framevec[x-width*3]/2+framevec[x]-framevec[x-width*6]/2;
+	}
+	return bytes_to_mat(framevec, width, height);
+
+}
+
+Mat glitch_bmp_ave(Mat frame,int width,int height){
+	std::vector<byte> framevec;  
+	framevec = mat_to_bytes(frame);
+	std::vector<byte> copy = framevec;
+	for (int x = width*2; x < framevec.size()-1; ++x){
+		framevec[x] = (framevec[x] + framevec[x-width] + framevec[x+width]+framevec[x+1] + framevec[x-1])/5;
+	}
+	return bytes_to_mat(framevec, width, height);
+
 }
 
 int main(int argc, char** argv){
@@ -91,11 +121,11 @@ int main(int argc, char** argv){
 		//comparams.push_back(CV_IMWRITE_PNG_COMPRESSION);
 		//comparams.push_back(9);
 		imwrite("output.bmp", hold);
-		hold = glitch_test(frame,width,height);
+		hold = glitch_bmp_row(frame,width,height);
 
 		imshow("Preview", hold);
 		
-		out << frame;
+		out << hold;
 		if (waitKey(1) >=0){
 			break;
 		}
