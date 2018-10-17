@@ -51,7 +51,7 @@ Mat glitch_test(Mat frame,int width,int height){
 	*/
 	std::vector<byte> framevec;  
 	framevec = mat_to_bytes(frame);
-	for (int x = 0; x < framevec.size()-1; ++x){
+	for (unsigned int x = 0; x < framevec.size()-1; ++x){
 		framevec[x] = framevec[x+1]+framevec[x];
 	}
 	return bytes_to_mat(framevec, width, height);
@@ -60,7 +60,7 @@ Mat glitch_test(Mat frame,int width,int height){
 Mat glitch_bmp_row(Mat frame,int width,int height){
 	std::vector<byte> framevec;  
 	framevec = mat_to_bytes(frame);
-	for (int x = 6; x < framevec.size()-1; ++x){
+	for (unsigned int x = 6; x < framevec.size()-1; ++x){
 		framevec[x] = framevec[x-3]/2+framevec[x]-framevec[x-6]/2;
 	}
 	return bytes_to_mat(framevec, width, height);
@@ -69,7 +69,7 @@ Mat glitch_bmp_row(Mat frame,int width,int height){
 Mat glitch_bmp_col(Mat frame,int width,int height){
 	std::vector<byte> framevec;  
 	framevec = mat_to_bytes(frame);
-	for (int x = width*6; x < framevec.size()-1; ++x){
+	for (unsigned int x = width*6; x < framevec.size()-1; ++x){
 		framevec[x] = framevec[x-width*3]/2+framevec[x]-framevec[x-width*6]/2;
 	}
 	return bytes_to_mat(framevec, width, height);
@@ -80,11 +80,32 @@ Mat glitch_bmp_ave(Mat frame,int width,int height){
 	std::vector<byte> framevec;  
 	framevec = mat_to_bytes(frame);
 	std::vector<byte> copy = framevec;
-	for (int x = width*2; x < framevec.size()-1; ++x){
+	for (unsigned int x = width*2; x < framevec.size()-1; ++x){
 		framevec[x] = (framevec[x] + framevec[x-width] + framevec[x+width]+framevec[x+1] + framevec[x-1])/5;
 	}
 	return bytes_to_mat(framevec, width, height);
 
+}
+
+Mat glitch_bmp_sort_varpass(Mat frame,int width,int height,int iter){
+	byte hold;
+	std::vector<byte> framevec;
+	framevec = mat_to_bytes(frame);
+	for (int z = 0; z < iter; ++z){
+		for (unsigned int x = 0; x < framevec.size()-2; ++x){
+			if (framevec[x] > framevec[x+1]){
+				hold=framevec[x+1];
+				framevec[x+1] = framevec[x];
+				framevec[x] = hold;
+			}
+		}
+		if (framevec.size()-2 > framevec.size()-1){
+			hold=framevec[framevec.size()-1];
+			framevec[framevec.size()-1] = framevec[framevec.size()-2];
+			framevec[framevec.size()-2] = hold;
+		}
+	}
+	return bytes_to_mat(framevec, width, height);
 }
 
 int main(int argc, char** argv){
@@ -121,7 +142,7 @@ int main(int argc, char** argv){
 		//comparams.push_back(CV_IMWRITE_PNG_COMPRESSION);
 		//comparams.push_back(9);
 		imwrite("output.bmp", hold);
-		hold = glitch_bmp_row(frame,width,height);
+		hold = glitch_bmp_sort_varpass(frame,width,height,50);
 
 		imshow("Preview", hold);
 		
