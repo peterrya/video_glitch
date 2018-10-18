@@ -7,7 +7,7 @@ OBJ=$(SRC:%.cpp=%.o)
 
 all: $(OBJ)
 	#$(CXX) $(CXXFLAGS) -o $(BIN) $^
-	$(CXX) vidglitch.cpp -std=c++11 -g -o $(BIN) -I /usr/local/include -L /usr/local/lib -lopencv_core -lopencv_highgui -lopencv_videoio -lopencv_imgcodecs
+	$(CXX) vidglitch.cpp glitch.cpp -std=c++11 -g -o $(BIN) -I /usr/local/include -L /usr/local/lib -lopencv_core -lopencv_highgui -lopencv_videoio -lopencv_imgcodecs
 
 
 %.o: %.c
